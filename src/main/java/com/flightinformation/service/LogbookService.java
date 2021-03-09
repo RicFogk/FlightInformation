@@ -1,5 +1,7 @@
 package com.flightinformation.service;
 
+import java.sql.Time;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,9 +46,10 @@ return list.stream().map(x -> new LogbookDTO(x)).collect(Collectors.toList());
 @Transactional
 public LogbookDTO insert(LogbookDTO dto) {
 	Logbook logbook = new Logbook(
-			null,
+			dto.getId(),
 			dto.getFlightNumber(),
 			dto.getInitDate(),
+			//dto.getYear(),
 			dto.getTailNumber(),
 			dto.getLogbookPage(),
 			dto.getCrew1(),
@@ -84,17 +87,27 @@ public LogbookDTO insert(LogbookDTO dto) {
 			dto.getTaxasNav(),
 			dto.getTripSupport(),
 			dto.getFboHandlerName(),
-			dto.getFboHanlder(),
+			dto.getFboHandler(),
 			dto.getCatering(),
 			dto.getCrewHotel(),
 			dto.getEngCostPerEngine(),
+			//dto.getGastoVariavelTotal(),
+			null,
 			dto.getObs(),
 			dto.isCompletionStatus(),
 			dto.getEndDate(),
 			dto.getMoment(),
-			dto.getFuelPrice()
+			dto.getFuelPrice(),
+			
+			dto.getApuCicle(),
+			dto.getTotalHour(),
+			dto.getTotalCicle(),
+			dto.getNextMx(),
+			dto.getHorasDispMx(),
+			dto.getJourneyTime()
 			);
 	logbook = repository.save(logbook);
+	
 	return new LogbookDTO(logbook);
 			
 }
@@ -202,15 +215,25 @@ private void copyDtotoEntity (LogbookDTO dto, Logbook entity) {
 	entity.setTaxasNav(dto.getTaxasNav());
 	entity.setTripSupport(dto.getTripSupport());
 	entity.setFboHandlerName(dto.getFboHandlerName());
-	entity.setFboHanlder(dto.getFboHanlder());
+	entity.setFboHanlder(dto.getFboHandler());
 	entity.setCatering(dto.getCatering());
 	entity.setCrewHotel(dto.getCrewHotel());
+	entity.setGastoVariavelTotal(dto.getGastoVariavelTotal());
 	entity.setEngCostPerEngine(dto.getEngCostPerEngine());
 	entity.setObs(dto.getObs());
 	entity.setCompletionStatus(dto.isCompletionStatus());
 	entity.setEndDate(dto.getEndDate());
 	entity.setMoment(dto.getMoment());
 	entity.setFuelPrice(dto.getFuelPrice());
+	entity.setEngCicle(dto.getEngCicle());
+	entity.setApuCicle(dto.getApuCicle());
+	entity.setTotalHour(dto.getTotalHour());
+	entity.setTotalCicle(dto.getTotalCicle());
+	entity.setNextMx(dto.getNextMx());
+	entity.setHorasDispMx(dto.getHorasDispMx());
+	entity.setJourneyTime(dto.getJourneyTime());
+	
+	
 	
 //	for(LogbookDTO dtoUpdated : dto.getFlightNumber()) {
 //		Logbook logbook = logbookRepository.getOne(dtoUpdated.getFlightNumber());

@@ -1,9 +1,10 @@
 package com.flightinformation.dto;
 
 import java.io.Serializable;
-import java.sql.Date;
+
 import java.sql.Time;
 import java.time.Instant;
+import java.util.Date;
 
 import com.flightinformation.model.Logbook;
 import com.flightinformation.model.Pilot;
@@ -12,9 +13,10 @@ public class LogbookDTO implements Serializable {
 
 private static final long serialVersionUID = 1L;
 
-
+private Integer id;
 private Long flightNumber;
 private Date initDate;
+//private Date year;
 private String tailNumber;
 private int logbookPage;
 private String crew1;
@@ -52,15 +54,23 @@ private Double taxasApt;
 private Double taxasNav;
 private Double tripSupport;
 private Double fboHandlerName;
-private Double fboHanlder;
+private Double fboHandler;
 private Double catering;
 private Double crewHotel;
 private Double engCostPerEngine;
+private Double gastoVariavelTotal;
 private String obs;
 private boolean completionStatus;
 private Date endDate;
 private Instant moment;
 private Double fuelPrice;
+private Long engCicle;
+private Long apuCicle;
+private Time totalHour;
+private Long totalCicle;
+private Date nextMx;
+private Time horasDispMx;
+private Time journeyTime;
 //private Pilot pilot;
 
 public LogbookDTO() {
@@ -68,17 +78,18 @@ public LogbookDTO() {
 
 
 
-public LogbookDTO(Long flightNumber, Date initDate, String tailNumber, int logbookPage, String crew1, String crew2,
+public LogbookDTO(Integer id,Long flightNumber, Date initDate, String tailNumber, int logbookPage, String crew1, String crew2,
 		String crew3, String pf, String aptFrom, String aptTo, Time startupTime, Time toTime, Time landTime,
 		Time shutdownTime, Time blockTime, Time flightTime, Time dayTime, Time nightTime, Time ifrTime, Time vfrTime,
 		Long dayLand, Long nightLand, Long cicle, Long paxNumber, Long initialFuel, Long finalFuel, Long usedFuel,
 		String fuelPlace, String fuelCia, Long fuelReceiptNumber, Long uplifted_fuel_liters, Long uplifted_fuel_kg,
 		Long airDist, Long gndDist, String solicitor, Double taxasApt, Double taxasNav, Double tripSupport,
-		Double fboHandlerName, Double fboHanlder, Double catering, Double crewHotel, Double engCostPerEngine,
-		String obs, boolean completionStatus, Date endDate, Instant moment, Double fuelPrice, Pilot pilot) {
+		Double fboHandlerName, Double fboHandler, Double catering, Double crewHotel, Double engCostPerEngine, Double gastoVariavelTotal,
+		String obs, boolean completionStatus, Date endDate, Instant moment, Double fuelPrice, Long apuCicle, Time totalHour, Long totalCicle, Date nextMx, Time horasDispMx, Time journeyTime) {
 	super();
 	this.flightNumber = flightNumber;
 	this.initDate = initDate;
+	//this.year=year;
 	this.tailNumber = tailNumber;
 	this.logbookPage = logbookPage;
 	this.crew1 = crew1;
@@ -116,15 +127,22 @@ public LogbookDTO(Long flightNumber, Date initDate, String tailNumber, int logbo
 	this.taxasNav = taxasNav;
 	this.tripSupport = tripSupport;
 	this.fboHandlerName = fboHandlerName;
-	this.fboHanlder = fboHanlder;
+	this.fboHandler = fboHandler;
 	this.catering = catering;
 	this.crewHotel = crewHotel;
 	this.engCostPerEngine = engCostPerEngine;
+	this.gastoVariavelTotal = gastoVariavelTotal;
 	this.obs = obs;
 	this.completionStatus = completionStatus;
 	this.endDate = endDate;
 	this.moment = moment;
 	this.fuelPrice = fuelPrice;
+	this.apuCicle = apuCicle;
+	this.totalHour = totalHour;
+	this.totalCicle = totalCicle;
+	this.nextMx = nextMx;
+	this.horasDispMx = horasDispMx;
+	this.journeyTime = journeyTime;
 }
 
 
@@ -134,9 +152,10 @@ super();
 //como nao ha mais ambiguidade pode apagar o this
 //this.id = entity.getId();
 
-
+id = entity.getId();
 flightNumber = entity.getFlightNumber();
 initDate = entity.getInitDate();
+//year = entity.getYear();
 tailNumber = entity.getTailNumber();
 logbookPage = entity.getLogbookPage();
 crew1  = entity.getCrew1();
@@ -174,16 +193,36 @@ taxasApt = entity.getTaxasApt();
 taxasNav = entity.getTaxasNav();
 tripSupport = entity.getTripSupport();
 fboHandlerName = entity.getFboHandlerName();
-fboHanlder = entity.getFboHanlder();
+fboHandler = entity.getFboHandler();
 catering = entity.getCatering();
 crewHotel = entity.getCrewHotel();
 engCostPerEngine = entity.getEngCostPerEngine();
+gastoVariavelTotal = entity.getGastoVariavelTotal();
 obs = entity.getObs();
 completionStatus = entity.isCompletionStatus();
 endDate = entity.getEndDate();
 moment = entity.getMoment();
 fuelPrice = entity.getFuelPrice();
+apuCicle =  entity.getApuCicle();
+totalHour =  entity.getTotalHour();
+totalCicle = entity.getTotalCicle();
+nextMx = entity.getNextMx();
+horasDispMx = entity.getHorasDispMx();
+journeyTime = entity.getJourneyTime();
 //pilot = entity.getPilot();
+}
+
+
+
+
+public Integer getId() {
+	return id;
+}
+
+
+
+public void setId(Integer id) {
+	this.id = id;
 }
 
 
@@ -209,6 +248,18 @@ public Date getInitDate() {
 public void setInitDate(Date initDate) {
 	this.initDate = initDate;
 }
+
+
+
+//public Date getYear() {
+//	return year;
+//}
+//
+//
+//
+//public void setYear(Date year) {
+//	this.year = year;
+//}
 
 
 
@@ -656,14 +707,14 @@ public void setFboHandlerName(Double fboHandlerName) {
 
 
 
-public Double getFboHanlder() {
-	return fboHanlder;
+public Double getFboHandler() {
+	return fboHandler;
 }
 
 
 
 public void setFboHanlder(Double fboHanlder) {
-	this.fboHanlder = fboHanlder;
+	this.fboHandler = fboHanlder;
 }
 
 
@@ -700,6 +751,18 @@ public Double getEngCostPerEngine() {
 
 public void setEngCostPerEngine(Double engCostPerEngine) {
 	this.engCostPerEngine = engCostPerEngine;
+}
+
+
+
+public Double getGastoVariavelTotal() {
+	return gastoVariavelTotal;
+}
+
+
+
+public void setGastoVariavelTotal(Double gastoVariavelTotal) {
+	this.gastoVariavelTotal = gastoVariavelTotal;
 }
 
 
@@ -769,7 +832,103 @@ public void setFuelPrice(Double fuelPrice) {
 //	return pilot;
 //}
 
+public Long getEngCicle() {
+	return engCicle;
+}
 
+
+
+public void setEngCicle(Long engCicle) {
+	this.engCicle = engCicle;
+}
+
+
+
+public Long getApuCicle() {
+	return apuCicle;
+}
+
+
+
+public void setApuCicle(Long apuCicle) {
+	this.apuCicle = apuCicle;
+}
+
+
+
+public Time getTotalHour() {
+	return totalHour;
+}
+
+
+
+public void setTotalHour(Time totalHour) {
+	this.totalHour = totalHour;
+}
+
+
+
+public Long getTotalCicle() {
+	return totalCicle;
+}
+
+
+
+public void setTotalCicle(Long totalCicle) {
+	this.totalCicle = totalCicle;
+}
+
+
+
+public Date getNextMx() {
+	return nextMx;
+}
+
+
+
+public void setNextMx(Date nextMx) {
+	this.nextMx = nextMx;
+}
+
+
+
+public Time getHorasDispMx() {
+	return horasDispMx;
+}
+
+
+
+public void setHorasDispMx(Time horasDispMx) {
+	this.horasDispMx = horasDispMx;
+}
+
+
+
+public void setFboHandler(Double fboHandler) {
+	this.fboHandler = fboHandler;
+}
+
+
+
+public Double gastoVariavelTotal () {
+
+	
+	gastoVariavelTotal = taxasApt + taxasNav + catering;
+	
+	return gastoVariavelTotal;
+}
+
+
+
+public Time getJourneyTime() {
+	return journeyTime;
+}
+
+
+
+public void setJourneyTime(Time journeyTime) {
+	this.journeyTime = journeyTime;
+}
 
 
 

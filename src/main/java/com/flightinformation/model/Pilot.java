@@ -9,18 +9,25 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="pilot")
 public class Pilot {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private String name;
 	private String email;
 	private Date cmaExpDate;
@@ -49,17 +56,30 @@ public class Pilot {
 //	inverseJoinColumns = @JoinColumn(name="logbook_flight_number"))
 //	private Set<Logbook> products = new HashSet<>();
 	
-	//-------------------------------------------------------------------------------------
-	@ManyToMany(cascade = {
-		    CascadeType.PERSIST,
-		    CascadeType.MERGE
-		})
-		@JoinTable(
-		    name = "pilot_logbook",
-		    joinColumns = @JoinColumn(name = "pilot_id"),
-		    inverseJoinColumns = @JoinColumn(name = "flight_number")
-		)
-		Set<Logbook> logbok = new HashSet<>();
+	
+	//----MANY TO ONE (MUITOS PILOTOS PARA UM VOO)---------------------------------------------------------------------------------
+//	@ManyToOne
+//	@JoinColumn(name="flight_number", nullable= false)
+//	private Logbook logbook;
+	//----MANY TO MANY---------------------------------------------------------------------------------
+
+// NAO PRECISA USAR TABELAS DE ASSOCIACAO PARA LOGBOOK/PILOT/SOLICIOR
+//	@ManyToMany(mappedBy = "pilots")
+//	private Set<Logbook> logbooks = new HashSet<>();
+	
+	
+	
+	//	@JsonIgnore
+//	@ManyToMany(cascade = {
+//		    CascadeType.PERSIST,
+//		    CascadeType.MERGE
+//		})
+//		@JoinTable(
+//		    name = "pilot_logbook",
+//		    joinColumns = @JoinColumn(name = "pilot_id"),
+//		    inverseJoinColumns = @JoinColumn(name = "logboo_flight_number")
+//		)
+//		Set<Logbook> logbook = new HashSet<>();
 	//--------------------------------------------------------------------------------------
 	
 	public Long getFlightNumber() {
@@ -157,15 +177,16 @@ public class Pilot {
 	public void setFlightNumberId(Long flightNumberId) {
 		this.flightNumber = flightNumberId;
 	}
-	
 
-	public Set<Logbook> getLogbok() {
-		return logbok;
-	}
+	// ----- GET AND SETTERS DO MANYTOMANY
 
-	public void setLogbok(Set<Logbook> logbok) {
-		this.logbok = logbok;
-	}
+//	public Set<Logbook> getLogbook() {
+//		return logbook;
+//	}
+//
+//	public void setLogbok(Set<Logbook> logbook) {
+//		this.logbook = logbook;
+//	}
 	
 	
 

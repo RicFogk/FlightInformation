@@ -1,31 +1,51 @@
 package com.flightinformation.model;
 
 
-import java.sql.Date;
+
+
+import java.io.Serializable;
 import java.sql.Time;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+
+//ANOTACOES
+//FAZER COMPONETIZACAO DA ENTIDADE COM EMBEDED PILOTS, AERONAVES, SOLICITOR. ex: CLASSE ENDERECO <<embeddable>> --> TEM A CAPICIDADE DE INCORPORAR OUTRA CLASSElErI070707
+
+//A estrategia EAGER LOADING é padrao para A associacao X-ToOne 
+//A estrategia TOLAZY é aplicada para a Associacao X-ToMany (Lazy carregamento por por demanda)
 
 
 @Entity
 @Table(name="logbook")
-public class Logbook {
-
-	@Column(name="id", unique=true, nullable=false)
+public class Logbook implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	@Column(name="id", unique=true)
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private Integer id;
 	
 	@Id
-	//@Column(nullable = false) SO USAR SE NAO FEZ O DDL NO DB
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@Column(nullable = false) //SO USAR SE NAO FEZ O DDL NO DB
 	private Long flightNumber;
+	
+	//usei o date util, pois o date sql nao estava buscandp
 	private Date initDate;
+	//private Date year;
+	
+
 	private String tailNumber;
 	private int logbookPage;
 	private String crew1;
@@ -55,7 +75,7 @@ public class Logbook {
 	private Long usedFuel;
 	private String fuelPlace;
 	private String fuelCia;
-	private Long fuelReceiptNumber;
+	private Long fuelReceiptNumber;	
 	private Long uplifted_fuel_liters;
 	private Long uplifted_fuel_kg;
 	private Long airDist;
@@ -67,27 +87,78 @@ public class Logbook {
 	private Double fboHandlerName;
 	
 	@Column(name="fbo_handler")
-	private Double fboHanlder;
+	private Double fboHandler;
 	private Double catering;
 	private Double crewHotel;
 	private Double engCostPerEngine;
+	
+	private Double gastoVariavelTotal;
+	
 	private String obs;
 	private boolean completionStatus;
 	private Date endDate;
 	private Instant moment;
 	private Double fuelPrice;
 	
+	// --------------- FARA PARTE DA PAG LOGBOOK (Incorporando colunas do AIRCRAFT, assim fica uma classe so (logbook))
+	private Long engCicle;
+	private Long apuCicle;
+	private Time totalHour;
+	private Long totalCicle;
+	private Date nextMx;
+	private Time horasDispMx;
+	//------------------------------------------------------------------------------------------------------------------
+	
+	// ----------------------- REGULAMENTACAO -------------------------------------------------------------------------
+	private Time journeyTime;
+	//------------------------------------------------------------------------------------------------------------------
+	
+//	@CreationTimestamp
+//	@Column(nullable = false) //sem precisao no datetime -> columnDefinition = "datetime" // a VALUE do SQL para dataCadastro e dataAtualizacao utc_timestamp, utc_timestamp
+//	private LocalDateTime dataCadastro;
+//	
+//	@UpdateTimestamp
+//	@Column(nullable = false) //, columnDefinition = "datetime"
+//	private LocalDateTime dataAtualizacao;
+//	
+	
+//	@ManyToOne
+//	private Aircraft aircraft;
+	
 //	private Pilot pilot;
 //	private Solicitor solicitor;
 //	private Aircraft aircraft; (POPULAR CLASSE)
 	
+	//Essa classe é uma parte da classe Logboo , é uma incorporacao **************** nao se aplica para agregar pois gera uma linha de custo fixo para cada voo
+//	@Embedded
+//	private CustoFixo custoFixo;
 	
-	
+	// NAO PRECISA USAR TABELAS DE ASSOCIACAO PARA LOGBOOK/PILOT/SOLICIOR PARA O ESCOPO DESTE PROJETO	
+	//----MANY TO MANY---------------------------------------------------------------------------------
+		
+//		@ManyToMany
+//		(cascade = {
+//			    CascadeType.PERSIST,
+//			    CascadeType.MERGE
+//			})
+//			@JoinTable(
+//			    name = "logbook_pilot",
+//			    joinColumns = @JoinColumn(name = "logbook_flightNumber"),
+//			    inverseJoinColumns = @JoinColumn(name = "pilot_id")
+//			)
+//			Set<Pilot> pilots = new HashSet<>();
+		//--------------------------------------------------------------------------------------
 	
 	
 	
 //	@ManyToOne(fetch=FetchType.EAGER)
-//	@JoinColumn(name="pilot_flight_number", nullable=false)
+//	@JoinColumn(name="aircraft_flight_number", nullable=false)
+	
+	//---------------------------------------------------------------------------------------------
+//	@ManyToOne
+//	@JoinColumn(name = "flightNumber", nullable = false)
+//	private Aircraft aircraft;
+	
 	  
 	
 	//--------------Comentei por ultimo 10:30 10/01/21
@@ -117,13 +188,14 @@ public class Logbook {
 			Time ifrTime, Time vfrTime, Long dayLand, Long nightLand, Long cicle, Long paxNumber, Long initialFuel,
 			Long finalFuel, Long usedFuel, String fuelPlace, String fuelCia, Long fuelReceiptNumber,
 			Long uplifted_fuel_liters, Long uplifted_fuel_kg, Long airDist, Long gndDist, String solicitor,
-			Double taxasApt, Double taxasNav, Double tripSupport, Double fboHandlerName, Double fboHanlder,
-			Double catering, Double crewHotel, Double engCostPerEngine, String obs, boolean completionStatus,
-			Date endDate, Instant moment, Double fuelPrice) {
+			Double taxasApt, Double taxasNav, Double tripSupport, Double fboHandlerName, Double fboHandler,
+			Double catering, Double crewHotel, Double engCostPerEngine, Double gastoVariavelTotal, String obs, boolean completionStatus,
+			Date endDate, Instant moment, Double fuelPrice, Long apuCicle, Time totalHour, Long totalCicle, Date nextMx, Time horasDispMx, Time journeyTime) {
 		super();
 		this.id = id;
 		this.flightNumber = flightNumber;
 		this.initDate = initDate;
+		//this.year = year;
 		this.tailNumber = tailNumber;
 		this.logbookPage = logbookPage;
 		this.crew1 = crew1;
@@ -162,24 +234,35 @@ public class Logbook {
 		this.taxasNav = taxasNav;
 		this.tripSupport = tripSupport;
 		this.fboHandlerName = fboHandlerName;
-		this.fboHanlder = fboHanlder;
+		this.fboHandler = fboHandler;
 		this.catering = catering;
 		this.crewHotel = crewHotel;
 		this.engCostPerEngine = engCostPerEngine;
+		this.gastoVariavelTotal = gastoVariavelTotal;
 		this.obs = obs;
 		this.completionStatus = completionStatus;
 		this.endDate = endDate;
 		this.moment = moment;
 		this.fuelPrice = fuelPrice;
+		
+		this.apuCicle = apuCicle;
+		this.totalHour = totalHour;
+		this.totalCicle = totalCicle;
+		this.nextMx = nextMx;
+		this.horasDispMx = horasDispMx;
+		this.journeyTime = journeyTime;
 	}
+	
+	
+	
 
 	public Integer getId() {
 		return id;
 	}
 
-//	public void setId(Long id) {
-//		this.id = id;
-//	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public Long getFlightNumber() {
 		return flightNumber;
@@ -196,7 +279,14 @@ public class Logbook {
 	public void setInitDate(Date initDate) {
 		this.initDate = initDate;
 	}
-
+//
+//	public Date getYear() {
+//		return year;
+//	}
+//
+//	public void setYear(Date year) {
+//		this.year = year;
+//	}
 	public String getTailNumber() {
 		return tailNumber;
 	}
@@ -493,12 +583,12 @@ public class Logbook {
 		this.fboHandlerName = fboHandlerName;
 	}
 
-	public Double getFboHanlder() {
-		return fboHanlder;
+	public Double getFboHandler() {
+		return fboHandler;
 	}
 
 	public void setFboHanlder(Double fboHanlder) {
-		this.fboHanlder = fboHanlder;
+		this.fboHandler = fboHanlder;
 	}
 
 	public Double getCatering() {
@@ -523,6 +613,17 @@ public class Logbook {
 
 	public void setEngCostPerEngine(Double engCostPerEngine) {
 		this.engCostPerEngine = engCostPerEngine;
+	}
+	
+	
+
+	public Double getGastoVariavelTotal() {
+		return gastoVariavelTotal;
+	}
+
+	public void setGastoVariavelTotal(Double gastoVariavelTotal) {
+		
+		this.gastoVariavelTotal = gastoVariavelTotal;
 	}
 
 	public String getObs() {
@@ -565,7 +666,85 @@ public class Logbook {
 		this.fuelPrice = fuelPrice;
 	}
 	
+	public Long getEngCicle() {
+		return engCicle;
+	}
+
+	public void setEngCicle(Long engCicle) {
+		this.engCicle = engCicle;
+	}
+
+	public Long getApuCicle() {
+		return apuCicle;
+	}
+
+	public void setApuCicle(Long apuCicle) {
+		this.apuCicle = apuCicle;
+	}
+
+	public Time getTotalHour() {
+		return totalHour;
+	}
+
+	public void setTotalHour(Time totalHour) {
+		this.totalHour = totalHour;
+	}
+
+	public Long getTotalCicle() {
+		return totalCicle;
+	}
+
+	public void setTotalCicle(Long totalCicle) {
+		this.totalCicle = totalCicle;
+	}
+
+	public Date getNextMx() {
+		return nextMx;
+	}
+
+	public void setNextMx(Date nextMx) {
+		this.nextMx = nextMx;
+	}
+
+	public Time getHorasDispMx() {
+		return horasDispMx;
+	}
+
+	public void setHorasDispMx(Time horasDispMx) {
+		this.horasDispMx = horasDispMx;
+	}
+
+	public void setFboHandler(Double fboHandler) {
+		this.fboHandler = fboHandler;
+	}
 	
+	public Double gastoVariavelTotal () {
+
+		
+		gastoVariavelTotal = taxasApt + taxasNav + catering;
+		
+		return gastoVariavelTotal;
+	}
+	
+	
+	
+	
+
+//	public Aircraft getAircraft() {
+//		return aircraft;
+//	}
+//
+//	public void setAircraft(Aircraft aircraft) {
+//		this.aircraft = aircraft;
+//	}
+
+	public Time getJourneyTime() {
+		return journeyTime;
+	}
+
+	public void setJourneyTime(Time journeyTime) {
+		this.journeyTime = journeyTime;
+	}
 
 	@Override
 	public String toString() {
@@ -580,10 +759,10 @@ public class Logbook {
 				+ ", fuelReceiptNumber=" + fuelReceiptNumber + ", uplifted_fuel_liters=" + uplifted_fuel_liters
 				+ ", uplifted_fuel_kg=" + uplifted_fuel_kg + ", airDist=" + airDist + ", gndDist=" + gndDist
 				+ ", Solicitor=" + Solicitor + ", taxasApt=" + taxasApt + ", taxasNav=" + taxasNav + ", tripSupport="
-				+ tripSupport + ", fboHandlerName=" + fboHandlerName + ", fboHanlder=" + fboHanlder + ", catering="
-				+ catering + ", crewHotel=" + crewHotel + ", engCostPerEngine=" + engCostPerEngine + ", obs=" + obs
-				+ ", completionStatus=" + completionStatus + ", endDate=" + endDate + ", moment=" + moment
-				+ ", fuelPrice=" + fuelPrice + "]";
+				+ tripSupport + ", fboHandlerName=" + fboHandlerName + ", fboHanlder=" + fboHandler + ", catering="
+				+ catering + ", crewHotel=" + crewHotel + ", engCostPerEngine=" + engCostPerEngine
+				+ ", gastoVariavelTotal=" + gastoVariavelTotal + ", obs=" + obs + ", completionStatus="
+				+ completionStatus + ", endDate=" + endDate + ", moment=" + moment + ", fuelPrice=" + fuelPrice + "]";
 	}
 
 	@Override
@@ -607,7 +786,7 @@ public class Logbook {
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime * result + ((engCostPerEngine == null) ? 0 : engCostPerEngine.hashCode());
 		result = prime * result + ((fboHandlerName == null) ? 0 : fboHandlerName.hashCode());
-		result = prime * result + ((fboHanlder == null) ? 0 : fboHanlder.hashCode());
+		result = prime * result + ((fboHandler == null) ? 0 : fboHandler.hashCode());
 		result = prime * result + ((finalFuel == null) ? 0 : finalFuel.hashCode());
 		result = prime * result + ((flightNumber == null) ? 0 : flightNumber.hashCode());
 		result = prime * result + ((flightTime == null) ? 0 : flightTime.hashCode());
@@ -615,6 +794,7 @@ public class Logbook {
 		result = prime * result + ((fuelPlace == null) ? 0 : fuelPlace.hashCode());
 		result = prime * result + ((fuelPrice == null) ? 0 : fuelPrice.hashCode());
 		result = prime * result + ((fuelReceiptNumber == null) ? 0 : fuelReceiptNumber.hashCode());
+		result = prime * result + ((gastoVariavelTotal == null) ? 0 : gastoVariavelTotal.hashCode());
 		result = prime * result + ((gndDist == null) ? 0 : gndDist.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((ifrTime == null) ? 0 : ifrTime.hashCode());
@@ -733,10 +913,10 @@ public class Logbook {
 				return false;
 		} else if (!fboHandlerName.equals(other.fboHandlerName))
 			return false;
-		if (fboHanlder == null) {
-			if (other.fboHanlder != null)
+		if (fboHandler == null) {
+			if (other.fboHandler != null)
 				return false;
-		} else if (!fboHanlder.equals(other.fboHanlder))
+		} else if (!fboHandler.equals(other.fboHandler))
 			return false;
 		if (finalFuel == null) {
 			if (other.finalFuel != null)
@@ -772,6 +952,11 @@ public class Logbook {
 			if (other.fuelReceiptNumber != null)
 				return false;
 		} else if (!fuelReceiptNumber.equals(other.fuelReceiptNumber))
+			return false;
+		if (gastoVariavelTotal == null) {
+			if (other.gastoVariavelTotal != null)
+				return false;
+		} else if (!gastoVariavelTotal.equals(other.gastoVariavelTotal))
 			return false;
 		if (gndDist == null) {
 			if (other.gndDist != null)
@@ -892,6 +1077,9 @@ public class Logbook {
 			return false;
 		return true;
 	}
+
+	
+	
 
 
 	
